@@ -1,0 +1,97 @@
+#!/bin/sh
+export ARCH=arm
+export SRC_DIR=../src
+export IMAGE_DIR=../images
+export CROSS_COMPILE=arm-none-linux-gnueabihf-
+export zImage_obj=$SRC_DIR/linux-5.6.11/arch/arm/boot/zImage
+export dtb_obj=$SRC_DIR/linux-5.6.11/arch/arm/boot/dts/vexpress-v2p-ca9.dtb
+export rootfs_obj=$IMAGE_DIR/rootfs.ext3
+
+function usage(){
+	echo "usage..."
+	echo "./smake zImage            -- cross-complie linux kernel zImage "
+	echo "./smake uImage            -- cross-complie linux kernel uImage "
+	echo "./smake uboot             -- cross-complie uboot"
+	echo "./smake busybox           -- cross-complie busybox"
+	echo "./smake run_uboot         -- run uboot in qemu without graphic"
+	echo "./smake run_zImage        -- run zImage in qemu with graphic"
+	echo "./smake debug_uboot       -- debug uboot use gdb in qemu without graphic"
+	echo "./smake debug_zImage      -- debug zImage use gdb in qemu with graphic"
+	echo "./smake clean_boot        -- clean uboot,reserve config"
+	echo "./smake clean_kernel      -- clean kernel,reserve config"
+	echo "./smake disclean_boot     -- deep clean uboot"
+	echo "./smake distclean_kernel  -- distclean kernel"
+	echo "./smake clean_busybox     -- clean busybox"
+	echo "./smake distclean_busybox -- distclean busybox"
+
+}
+
+cd $SRC_DIR
+if [ 1 -eq $# ]; then
+	if [ $1 = "zImage" ]; then
+        cd linux-5.6.11
+		make vexpress_defconfig 
+		make -j12 zImage
+		make dts
+		make modules
+        echo "generate zImage dts succeed"
+    elif [ $1 = "uImage" ]; then
+        export LOADADDR=0x60003000
+        cd linux-5.6.11
+        make vexpress_defconfig
+        make -j12 uImage
+        make dtbs
+        make modules
+        echo "generate uImage succeed"
+    elif [ $1 = "uboot" ]; then
+        cd u-boot-2020.04
+        make vexpress_ca9x4_defconfig
+        make -j12
+        echo "generate uboot succeed"
+    elif [ $1 = "busybox" ]; then
+        cd busybox-1.31.1
+        make menuconfig
+        make -j12
+        make install
+        echo "generate busybox succeed"
+    elif [ $1 = "run_uboot" ]; then
+        cd u-boot-2020.04
+        qemu-system-arm -M vexpress-a9 \
+            -m 256M -nographic -kernel u-boot \
+            -net nic -net tap,ifname=tap0,script=no,downscript=no 
+            #-sd $rootfs_obj
+    elif [ $1 = "run_zImage" ]; then
+        sudo qemu-system-arm -M vexpress-a9 -m 512M -dtb $dtb_obj -kernel $zImage_obj\
+			 -append "root=/dev/mmcblk0 console=tty0 init=/linuxrc" -sd $rootfs_obj\
+             -net nic -net tap,ifname=tap0,script=no,downscript=no
+    elif [ $1 = "clean_kernel" ]; then
+        cd linux-5.6.11
+    	make clean 
+        echo "Clean kernel ..."
+    elif [ $1 = "clean_boot" ]; then
+        cd u-boot-2020.04
+    	make clean 
+        echo "Clean boot ..."
+    elif [ $1 = "distclean_kernel" ]; then
+        cd linux-5.6.11
+    	make distclean 
+        echo "Distclean kernel over ..."
+    elif [ $1 = "distclean_boot" ]; then
+        cd u-boot-2020.04
+    	make distclean 
+        echo "Distclean boot ..."
+    elif [ $1 = "clean_busybox" ]; then
+        cd busybox-1.31.1
+        make clean
+        echo "clean busybox succeed"
+    elif [ $1 = "distclean_busybox" ]; then
+        cd busybox-1.31.1
+        make distclean
+        echo "distclean busybox succeed"
+	else
+        usage
+    fi
+else
+    usage
+fi
+
