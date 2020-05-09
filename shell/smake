@@ -1,7 +1,8 @@
-#!/bin/sh
+#!/bin/bash
+cd ../
 export ARCH=arm
-export SRC_DIR=../src
-export IMAGE_DIR=../images
+export SRC_DIR=`pwd`/src
+export IMAGE_DIR=`pwd`/images
 export CROSS_COMPILE=arm-none-linux-gnueabihf-
 export zImage_obj=$SRC_DIR/linux-5.6.11/arch/arm/boot/zImage
 export dtb_obj=$SRC_DIR/linux-5.6.11/arch/arm/boot/dts/vexpress-v2p-ca9.dtb
@@ -13,6 +14,8 @@ function usage(){
 	echo "./smake uImage            -- cross-complie linux kernel uImage "
 	echo "./smake uboot             -- cross-complie uboot"
 	echo "./smake busybox           -- cross-complie busybox"
+	echo "./smake rootfs            -- create rootfs ext3 image"
+	echo "./smake clean_rootfs      -- clean rootfs dir"
 	echo "./smake run_uboot         -- run uboot in qemu without graphic"
 	echo "./smake run_zImage        -- run zImage in qemu with graphic"
 	echo "./smake debug_uboot       -- debug uboot use gdb in qemu without graphic"
@@ -23,6 +26,7 @@ function usage(){
 	echo "./smake distclean_kernel  -- distclean kernel"
 	echo "./smake clean_busybox     -- clean busybox"
 	echo "./smake distclean_busybox -- distclean busybox"
+	echo "./smake setup_net         -- setup net connection with qemu"
 
 }
 
@@ -32,7 +36,7 @@ if [ 1 -eq $# ]; then
         cd linux-5.6.11
 		make vexpress_defconfig 
 		make -j12 zImage
-		make dts
+		make dtbs
 		make modules
         echo "generate zImage dts succeed"
     elif [ $1 = "uImage" ]; then
@@ -54,6 +58,14 @@ if [ 1 -eq $# ]; then
         make -j12
         make install
         echo "generate busybox succeed"
+    elif [ $1 = "rootfs" ]; then
+        cd ../shell
+        ./rootfs_build.sh
+        echo "generate roots image"
+    elif [ $1 = "clean_rootfs" ]; then
+        cd ../shell
+        ./rootfs_build.sh clean
+        echo "clean rootfs dir"
     elif [ $1 = "run_uboot" ]; then
         cd u-boot-2020.04
         qemu-system-arm -M vexpress-a9 \
@@ -61,8 +73,8 @@ if [ 1 -eq $# ]; then
             -net nic -net tap,ifname=tap0,script=no,downscript=no 
             #-sd $rootfs_obj
     elif [ $1 = "run_zImage" ]; then
-        sudo qemu-system-arm -M vexpress-a9 -m 512M -dtb $dtb_obj -kernel $zImage_obj\
-			 -append "root=/dev/mmcblk0 console=tty0 init=/linuxrc" -sd $rootfs_obj\
+         sudo qemu-system-arm -M vexpress-a9 -m 512M -dtb $dtb_obj -kernel $zImage_obj -smp 4\
+			 -append "root=/dev/mmcblk0 rw rootwait earlyprintk console=tty0 init=/linuxrc" -sd $rootfs_obj\
              -net nic -net tap,ifname=tap0,script=no,downscript=no
     elif [ $1 = "clean_kernel" ]; then
         cd linux-5.6.11
@@ -88,8 +100,23 @@ if [ 1 -eq $# ]; then
         cd busybox-1.31.1
         make distclean
         echo "distclean busybox succeed"
+    elif [ $1 = "setup_net" ]; then
+        ifconfig|grep tap1
+        if [ $? = 0 ]; then
+            cd ../shell
+            ./setup_net.sh
+            echo "setup_net succeed..."
+        else 
+            echo "net haven been set before...."
+        fi
 	else
         usage
+    fi
+elif [ 2 -eq $# ]; then
+    if [ $1 = "modules" ]; then
+        cd linux-5.6.11
+        make M=$SRC_DIR/modules/$2 modules SUBDIRS=$SRC_DIR/modules/$2
+        echo "make modules $2 succeed..."
     fi
 else
     usage
