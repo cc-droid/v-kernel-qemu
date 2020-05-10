@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ 0 = $# ]; then
+    echo ""
+    echo "usage:"
+    echo "  [./debug uboot] for uboot"
+    echo "  [./debug kernel] for kernel"
+    echo ""
+    exit
+fi
+
+if [ 1 = $# ]; then
+    if [ $1 = "uboot" ]; then
+        arm-none-linux-gnueabihf-gdb -tui -x uboot_arm_gdbinit
+    fi
+    if [ $1 = "kernel" ]; then
+        arm-none-linux-gnueabihf-gdb -tui -x kernel_arm_gdbinit
+    fi
+fi

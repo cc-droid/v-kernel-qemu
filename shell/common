@@ -1,0 +1,81 @@
+#!/bin/bash
+
+function usage(){
+    echo""
+    echo -e "now support architecture as below:"
+    echo "      arm, vexpress-a9 board emulated"
+    echo "usage:"
+    echo -e "  arm, enter as below for help: \n     ./smake -arm"
+    echo ""
+}
+
+function make_modules(){
+   cd $SRC_DIR/linux-5.6.11
+   make M=$SRC_DIR/modules/$1 modules SUBDIRS=$SRC_DIR/modules/$2
+   echo "make modules $2 succeed..."
+}
+
+function clean_modules(){
+   cd $SRC_DIR/modules/$3
+   make clean 
+   echo "make clean $3 succeed..."
+}
+
+function build_rootfs(){
+   cd $SHELL_DIR 
+   ./rootfs_build.sh
+   echo "generate roots image"
+}
+
+function setup_net(){
+   ifconfig|grep tap0 > /dev/null
+   if [ $? != 0 ]; then
+       cd $SHELL_DIR
+       ./setup_net.sh
+       echo "setup_net succeed..."
+   else 
+       echo "net haven been setted before...."
+   fi
+}
+
+function clean_rootfs(){
+   cd $SHELL_DIR 
+   ./rootfs_build.sh clean
+   echo "clean rootfs dir"
+}
+
+function clean_kernel(){
+   cd $SRC_DIR/linux-5.6.11
+   make clean 
+   echo "Clean kernel ..."
+}
+
+function clean_boot(){
+   cd $SRC_DIR/u-boot-2020.04
+   make clean 
+   echo "Clean boot ..."
+}
+
+function distclean_kernel(){
+   cd $SRC/linux-5.6.11
+   make distclean 
+   echo "Distclean kernel over ..."
+}
+
+function distclean_boot(){
+   cd $SRC_DIR/u-boot-2020.04
+   make distclean 
+   echo "Distclean boot ..."
+}
+
+function clean_busybox(){
+   cd $SRC_DIR/busybox-1.31.1
+   make clean
+   echo "clean busybox succeed"
+}
+
+function distclean_busybox(){
+   cd $SRC_DIR/busybox-1.31.1
+   make distclean
+   echo "distclean busybox succeed"
+}

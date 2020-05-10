@@ -1,122 +1,70 @@
 #!/bin/bash
-cd ../
-export ARCH=arm
-export SRC_DIR=`pwd`/src
-export IMAGE_DIR=`pwd`/images
-export CROSS_COMPILE=arm-none-linux-gnueabihf-
-export zImage_obj=$SRC_DIR/linux-5.6.11/arch/arm/boot/zImage
-export dtb_obj=$SRC_DIR/linux-5.6.11/arch/arm/boot/dts/vexpress-v2p-ca9.dtb
-export rootfs_obj=$IMAGE_DIR/rootfs.ext3
 
-function usage(){
-	echo "usage..."
-	echo "./smake zImage            -- cross-complie linux kernel zImage "
-	echo "./smake uImage            -- cross-complie linux kernel uImage "
-	echo "./smake uboot             -- cross-complie uboot"
-	echo "./smake busybox           -- cross-complie busybox"
-	echo "./smake rootfs            -- create rootfs ext3 image"
-	echo "./smake clean_rootfs      -- clean rootfs dir"
-	echo "./smake run_uboot         -- run uboot in qemu without graphic"
-	echo "./smake run_zImage        -- run zImage in qemu with graphic"
-	echo "./smake debug_uboot       -- debug uboot use gdb in qemu without graphic"
-	echo "./smake debug_zImage      -- debug zImage use gdb in qemu with graphic"
-	echo "./smake clean_boot        -- clean uboot,reserve config"
-	echo "./smake clean_kernel      -- clean kernel,reserve config"
-	echo "./smake disclean_boot     -- deep clean uboot"
-	echo "./smake distclean_kernel  -- distclean kernel"
-	echo "./smake clean_busybox     -- clean busybox"
-	echo "./smake distclean_busybox -- distclean busybox"
-	echo "./smake setup_net         -- setup net connection with qemu"
+source ./global.mk
+source $SHELL_DIR/arm_func
+source $SHELL_DIR/common
 
-}
+if [ 0 = $# ]; then
+    usage
+    exit
+fi
 
-cd $SRC_DIR
-if [ 1 -eq $# ]; then
-	if [ $1 = "zImage" ]; then
-        cd linux-5.6.11
-		make vexpress_defconfig 
-		make -j12 zImage
-		make dtbs
-		make modules
-        echo "generate zImage dts succeed"
-    elif [ $1 = "uImage" ]; then
-        export LOADADDR=0x60003000
-        cd linux-5.6.11
-        make vexpress_defconfig
-        make -j12 uImage
-        make dtbs
-        make modules
-        echo "generate uImage succeed"
-    elif [ $1 = "uboot" ]; then
-        cd u-boot-2020.04
-        make vexpress_ca9x4_defconfig
-        make -j12
-        echo "generate uboot succeed"
-    elif [ $1 = "busybox" ]; then
-        cd busybox-1.31.1
-        make menuconfig
-        make -j12
-        make install
-        echo "generate busybox succeed"
-    elif [ $1 = "rootfs" ]; then
-        cd ../shell
-        ./rootfs_build.sh
-        echo "generate roots image"
-    elif [ $1 = "clean_rootfs" ]; then
-        cd ../shell
-        ./rootfs_build.sh clean
-        echo "clean rootfs dir"
-    elif [ $1 = "run_uboot" ]; then
-        cd u-boot-2020.04
-        qemu-system-arm -M vexpress-a9 \
-            -m 256M -nographic -kernel u-boot \
-            -net nic -net tap,ifname=tap0,script=no,downscript=no 
-            #-sd $rootfs_obj
-    elif [ $1 = "run_zImage" ]; then
-         sudo qemu-system-arm -M vexpress-a9 -m 512M -dtb $dtb_obj -kernel $zImage_obj -smp 4\
-			 -append "root=/dev/mmcblk0 rw rootwait earlyprintk console=tty0 init=/linuxrc" -sd $rootfs_obj\
-             -net nic -net tap,ifname=tap0,script=no,downscript=no
-    elif [ $1 = "clean_kernel" ]; then
-        cd linux-5.6.11
-    	make clean 
-        echo "Clean kernel ..."
-    elif [ $1 = "clean_boot" ]; then
-        cd u-boot-2020.04
-    	make clean 
-        echo "Clean boot ..."
-    elif [ $1 = "distclean_kernel" ]; then
-        cd linux-5.6.11
-    	make distclean 
-        echo "Distclean kernel over ..."
-    elif [ $1 = "distclean_boot" ]; then
-        cd u-boot-2020.04
-    	make distclean 
-        echo "Distclean boot ..."
-    elif [ $1 = "clean_busybox" ]; then
-        cd busybox-1.31.1
-        make clean
-        echo "clean busybox succeed"
-    elif [ $1 = "distclean_busybox" ]; then
-        cd busybox-1.31.1
-        make distclean
-        echo "distclean busybox succeed"
-    elif [ $1 = "setup_net" ]; then
-        ifconfig|grep tap1
-        if [ $? = 0 ]; then
-            cd ../shell
-            ./setup_net.sh
-            echo "setup_net succeed..."
-        else 
-            echo "net haven been set before...."
-        fi
-	else
-        usage
+if [ 1 = $# ]; then
+    if [ $1 = "-arm" ]; then
+        arm_usage
+        exit
     fi
-elif [ 2 -eq $# ]; then
-    if [ $1 = "modules" ]; then
-        cd linux-5.6.11
-        make M=$SRC_DIR/modules/$2 modules SUBDIRS=$SRC_DIR/modules/$2
-        echo "make modules $2 succeed..."
+fi
+
+if [ 2 = $# ] || [ 3 = $# ] || [ 4 = $# ]; then
+    if [ $1 = "-arm" ]; then
+	    if [ $2 = "zImage" ]; then
+            make_arm_zImage
+        elif [ $2 = "uImage" ]; then
+            make_arm_uImage
+        elif [ $2 = "uboot" ]; then
+            make_arm_boot
+        elif [ $2 = "busybox" ]; then
+            make_arm_busybox
+        elif [ $2 = "rootfs" ]; then
+            build_rootfs
+        elif [ $2 = "clean_rootfs" ]; then
+            clean_rootfs
+        elif [ $2 = "run_uboot" ]; then
+            run_arm_boot
+        elif [ $2 = "debug_uboot" ]; then
+            debug_arm_boot
+        elif [ $2 = "run_zImage" ]; then
+            run_arm_zImage
+        elif [ $2 = "debug_zImage" ]; then
+            debug_arm_zImage
+        elif [ $2 = "clean_kernel" ]; then
+            clean_kernel
+        elif [ $2 = "clean_boot" ]; then
+            clean_boot
+        elif [ $2 = "distclean_kernel" ]; then
+            distclean_kernel
+        elif [ $2 = "distclean_boot" ]; then
+            distclean_boot
+        elif [ $2 = "clean_busybox" ]; then
+            clean_busybox
+        elif [ $2 = "distclean_busybox" ]; then
+            distclean_busybox
+        elif [ $2 = "setup_net" ]; then
+            setup_net
+        elif [ $2 = "modules" ] ; then
+            if [ 3 = $# ]; then
+                make_modules $3
+            else
+                if [ 4 = $# ] && [ $3 = "clean" ]; then
+                    clean_modules
+                fi
+            fi
+        else
+            arm_usage
+        fi
+    else
+        usage
     fi
 else
     usage

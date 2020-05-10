@@ -22,6 +22,7 @@ sudo mkdir -p rootfs/sbin # /sbin包含系统运行的关键可执行文件以�
 sudo mkdir -p rootfs/home # /home普通用户的工作目录，没有普通用户都会在这里建立一个文件夹
 sudo mkdir -p rootfs/etc # /etc存放系统配置文件以及应用程序的配置文件
 sudo mkdir -p rootfs/lib # /lib存放所有应用程序的共享文件以及内核模块
+sudo mkdir -p rootfs/lib/modules # /lib存放所有应用程序的共享文件以及内核模块
 sudo mkdir -p rootfs/proc/ # /proc目录是内核在内存中映射的实时文件系统，存放内核向用户应用程序提供的信息文件
 sudo mkdir -p rootfs/sys/ # /sys是文件系统挂载的地方
 sudo mkdir -p rootfs/tmp/ # /tmp存放系统或应用程序产生的临时文件
