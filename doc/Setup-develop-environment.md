@@ -4,9 +4,9 @@
 
 ## **Host environment**
 
-* **Platform **
+* **Platform**
 
-  `win10 + vmware15.5 + fedora32 + qemu4.2` + gcc10.0.1
+  `win10 + vmware15.5 + fedora32 + qemu4.2 + gcc10.0.1`
 
 * **network**
 
@@ -69,7 +69,7 @@ sudo yum install xinetd
 
 * Edit `/usr/lib/systemd/system/tftp.service`
 
-  ​	ExecStart=/usr/sbin/in.tftpd -s ExecStart=/usr/sbin/in.tftpd -s <font color="red">	~~~/home/develop/vexpress-a9/linux-5.6.11/arch/arm/boot~~~ </font>, append in this file, red underline text indicate your **tftp boot directory**  
+  ExecStart=/usr/sbin/in.tftpd -s <font color="red"><u>/home/develop/vexpress-a9/linux-5.6.11/arch/arm/boot</u> </font>, append in this file, red underline text indicate your **tftp boot directory**  
 
 * start xinetd.service and tftp.service
 
@@ -96,7 +96,7 @@ uImage is a file at tftp boot directory , you can desigate as your self, indicat
   
 * configure
   ``vim /etc/exports``
-  append <font color="red">~~~`/home/develop/vexpressa9/rootfs`~~~</font>  (ro,no_root_squash,sync,nohide) , 
+  append <font color="red"><u>`/home/develop/vexpressa9/rootfs`</u></font>  (ro,no_root_squash,sync,nohide) , 
 
   red underline text indicate your **nfs mount directory**  
 
@@ -134,7 +134,5 @@ mount -t nfs -o nolock 192.168.1.80:/home/develop/vexpressa9/rootfs /mnt
 
 just have fun!~~~~
 
-any problem can contact me ~
-
-​	
+any problem can contact me ~	
 
