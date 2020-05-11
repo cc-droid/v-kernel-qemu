@@ -1,8 +1,8 @@
 # simple linux kernel learning environment with qemu 
 
-> [TOC]
+[TOC]
 
-**Config environment can refer this document [envoirnment setup](doc/Setup develop environment.md)**
+**Config environment can refer this document [envoirnment setup](./doc/Setup develop environment.md)**
 
 ## **support architecture now**
 
@@ -10,11 +10,11 @@
 
 ## **snap**
 
-![snap](/home/develop/vexpress-a9/doc/images/snap-environment.png)
+![snap](./doc/images/snap-environment.png)
 
 ## **usage**
 
-* **run command** $\to $ `cd shell;./smake`
+* **run command** $\to$ `cd shell;./smake`
 
 ```markdown
 now support architecture as below:
@@ -25,7 +25,7 @@ usage:
 
 ```
 
-* **run command** $\to $ `cd shell;./smake -arm`
+* **run command** $\to$ `cd shell;./smake -arm`
 
 ```markdown
 usage for arm:
