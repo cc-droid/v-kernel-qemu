@@ -2,7 +2,7 @@
 
 [TOC]
 
-**Config environment can refer this document [envoirnment setup](./doc/Setup develop environment.md)**
+**Config environment can refer this document [envoirnment setup](./doc/Setup\ develop\ environment.md)**
 
 ## **support architecture now**
 
