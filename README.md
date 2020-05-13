@@ -27,7 +27,7 @@ usage:
 
 ```
 
-* **run command**  cd shell;./smake -arm`
+* **run command**  `cd shell;./smake -arm`
 
 ```markdown
 usage for arm:
