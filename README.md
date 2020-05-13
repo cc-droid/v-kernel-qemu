@@ -16,7 +16,7 @@
 
 ## **usage**
 
-* **run command** $\to$ `cd shell;./smake`
+* **run command** `cd shell;./smake`
 
 ```markdown
 now support architecture as below:
@@ -27,7 +27,7 @@ usage:
 
 ```
 
-* **run command** $\to$ `cd shell;./smake -arm`
+* **run command**  cd shell;./smake -arm`
 
 ```markdown
 usage for arm:
