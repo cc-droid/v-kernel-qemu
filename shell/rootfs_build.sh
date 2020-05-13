@@ -14,7 +14,7 @@ fi
 # 1.先进行清理操作
 sudo rm -rf rootfs
 sudo rm -rf tmpfs
-
+sudo mkdir images
 sudo mkdir rootfs
 # 2.创建Linux中的必要文件夹
 sudo mkdir -p rootfs/bin # /bin包含普通用户和超级用户都能使用的命令
@@ -58,5 +58,5 @@ sudo mount -t ext3 rootfs.ext3 tmpfs/ -o loop
 # 8.将之前创建的文件系统相关的文件放到通过tmpfs放到rootfs.ext3文件系统中去
 sudo cp -r rootfs/*  tmpfs/
 sudo umount tmpfs
-mv rootfs.ext3 $IMAGE_DIR
+sudo mv rootfs.ext3 $IMAGE_DIR
 sudo rm -rf tmpfs

@@ -2,7 +2,9 @@
 
 [TOC]
 
-**Config environment can refer this document [envoirnment setup](./doc/Setup-develop-environment.md)**
+**Config environment using Fedora32 can refer this document [envoirnment setup](./doc/Setup-develop-environment.md)**
+
+**for ubuntu20.04, refer this [setup4ubuntu20.04](./doc/Setup-develop-environment_ubuntu20.04.md)**
 
 ## **support architecture now**
 

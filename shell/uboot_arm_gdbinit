@@ -1,2 +1,3 @@
- target remote 127.0.0.1:1234
- file /home/develop/vexpress-a9/src/u-boot-2020.04/u-boot
+#!/bin/bash
+target remote 127.0.0.1:1234
+file ../src/u-boot-2020.04/u-boot
