@@ -48,7 +48,7 @@ sudo tar xvf gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf.tar.xz -C /opt
 
 ```shell
 sudo brctl addbr br0
-apt-get install uml-utilities
+sudo apt-get install uml-utilities
 sudo tunctl -u develop -t tap0
 sudo brctl addif br0 tap0
 sudo ifconfig tap0 192.168.1.111 promisc up
