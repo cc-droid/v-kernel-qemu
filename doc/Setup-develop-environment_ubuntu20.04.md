@@ -52,7 +52,7 @@ sudo apt-get install uml-utilities
 sudo tunctl -u develop -t tap0
 sudo brctl addif br0 tap0
 sudo ifconfig tap0 192.168.1.111 promisc up
-sudo  ifconfig ens33 192.168.1.200 promisc up
+sudo ip address add 192.168.1.100/24 dev ens33
 ```
 
 ## NFS config
