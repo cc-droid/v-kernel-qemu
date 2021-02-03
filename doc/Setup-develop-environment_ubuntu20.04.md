@@ -11,6 +11,7 @@ sudo apt install net-tools
 sudo apt-get install bridge-utils
 sudo apt-get install uml-utilities
 sudo apt-get install libncurses5-dev libncursesw5-dev
+sudo apt-get install u-boot-tools
 ```
 
 ## qemu install
